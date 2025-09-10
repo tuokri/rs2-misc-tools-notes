@@ -1,0 +1,4 @@
+00007FF6178E1AE0 | 48:8B0D 017D9900         | mov rcx,qword ptr ds:[7FF6182797E8]                                              | 00007FF6182797E8:L"敀ᠭ翶"
+00007FF6178E1AE7 | 4C:8D05 825F7100         | lea r8,qword ptr ds:[7FF617FF7A70]                                               | 00007FF617FF7A70:L"SERVER EXE PATCHED BY POLISH FEMBOYS WEARING KNEE SOCKS"
+00007FF6178E1AEE | BA F8020000              | mov edx,2F8                                                                      |
+00007FF6178E1AF3 | E8 08B65CFF              | call vngame.7FF616EAD100                                                         |
