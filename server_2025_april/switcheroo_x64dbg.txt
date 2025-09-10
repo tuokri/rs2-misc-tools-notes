@@ -1,0 +1,5 @@
+00007FF7CC2FD38D | 41:B9 01000000           | mov r9d,1                                                                                  |
+00007FF7CC2FD393 | 90                       | nop                                                                                        |
+00007FF7CC2FD394 | BA 03000000              | mov edx,3                                                                                  |
+00007FF7CC2FD399 | 90                       | nop                                                                                        |
+00007FF7CC2FD39A | EB 35                    | jmp vngame.7FF7CC2FD3D1                                                                    |
