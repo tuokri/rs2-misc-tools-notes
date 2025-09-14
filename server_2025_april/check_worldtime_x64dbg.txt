@@ -1,6 +1,6 @@
-00007FF63D5206AE | 48:8B0D 63BBCB00         | mov rcx,qword ptr ds:[7FF63E1DC218]                                              |
-00007FF63D5206B5 | E8 3662E9FF              | call vngame.7FF63D3B68F0                                                         |
-00007FF63D5206BA | 48:C7C1 0000F041         | mov rcx,41F00000                                                                 |
-00007FF63D5206C1 | 6648:0F6EC9              | movq xmm1,rcx                                                                    |
-00007FF63D5206C6 | 0F2FC8                   | comiss xmm1,xmm0                                                                 |
-00007FF63D5206C9 | 72 2E                    | jb vngame.7FF63D5206F9                                                           |
+00007FF60D9A06AE | 48:8B0D 63BBCB00         | mov rcx,qword ptr ds:[7FF60E65C218]                                              |
+00007FF60D9A06B5 | E8 3662E9FF              | call vngame.7FF60D8368F0                                                         |
+00007FF60D9A06BA | 48:C7C1 0000F041         | mov rcx,41F00000                                                                 |
+00007FF60D9A06C1 | 6648:0F6EC9              | movq xmm1,rcx                                                                    |
+00007FF60D9A06C6 | 0F2FC8                   | comiss xmm1,xmm0                                                                 |
+00007FF60D9A06C9 | 72 2E                    | jb vngame.7FF60D9A06F9                                                           |
