@@ -1,0 +1,6 @@
+00007FF7B8501AE0 | 48:8B0D B1D7CB00         | mov rcx,qword ptr ds:[7FF7B91BF298]                                              |
+00007FF7B8501AE7 | E8 E46EE9FF              | call vngame.7FF7B83989D0                                                         |
+00007FF7B8501AEC | 48:C7C1 0000F041         | mov rcx,41F00000                                                                 |
+00007FF7B8501AF3 | 6648:0F6EC9              | movq xmm1,rcx                                                                    |
+00007FF7B8501AF8 | 0F2FC8                   | comiss xmm1,xmm0                                                                 |
+00007FF7B8501AFB | 72 3B                    | jb vngame.7FF7B8501B38                                                           |
