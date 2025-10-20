@@ -1,0 +1,131 @@
+{
+  "version": 10,
+  "cmakeMinimumRequired": {
+    "major": 4,
+    "minor": 0,
+    "patch": 0
+  },
+  "$comment": [
+    "TODO: Remember to add Linux support!",
+    "TODO: Add vcpkg later if needed!"
+  ],
+  "configurePresets": [
+    {
+      "name": "config-base",
+      "hidden": true,
+      "displayName": "Base Config",
+      "description": "Common base configuration",
+      "binaryDir": "${sourceDir}/cmake-build-${presetName}"
+    },
+    {
+      "name": "config-base-windows",
+      "inherits": "config-base",
+      "hidden": true,
+      "generator": "Ninja",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "cl.exe",
+        "CMAKE_CXX_COMPILER": "cl.exe"
+      }
+    },
+    {
+      "name": "config-base-windows-debug",
+      "inherits": "config-base-windows",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "RS2_COMPILE_OPTIONS": "/W4;/await:strict;/Zi",
+        "RS2_LINK_OPTIONS": ""
+      }
+    },
+    {
+      "name": "config-base-windows-release",
+      "inherits": "config-base-windows",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "RS2_COMPILE_OPTIONS": "/W4;/await:strict",
+        "RS2_LINK_OPTIONS": ""
+      }
+    },
+    {
+      "name": "config-base-windows-relwithdebinfo",
+      "inherits": "config-base-windows",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "RS2_COMPILE_OPTIONS": "/W4;/await:strict",
+        "RS2_LINK_OPTIONS": ""
+      }
+    },
+    {
+      "name": "config-windows-debug-x64",
+      "displayName": "Windows Debug x64 configuration",
+      "inherits": "config-base-windows-debug",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "binaryDir": "${sourceDir}/cmake-build-${presetName}"
+    },
+    {
+      "name": "config-windows-debug-x64-asan",
+      "displayName": "Windows Debug x64 configuration (with AddressSanitizer)",
+      "inherits": "config-base-windows-debug",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "binaryDir": "${sourceDir}/cmake-build-${presetName}",
+      "cacheVariables": {
+        "RS2_COMPILE_OPTIONS": "/W4;/await:strict;/Zi;/fsanitize=address;"
+      }
+    },
+    {
+      "name": "config-windows-release-x64",
+      "displayName": "Windows Release x64 configuration",
+      "inherits": "config-base-windows-release",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "binaryDir": "${sourceDir}/cmake-build-${presetName}"
+    },
+    {
+      "name": "config-windows-relwithdebinfo-x64",
+      "displayName": "Windows RelWithDebInfo x64 configuration",
+      "inherits": "config-base-windows-relwithdebinfo",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "binaryDir": "${sourceDir}/cmake-build-${presetName}"
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "windows-debug-x64",
+      "configurePreset": "config-windows-debug-x64",
+      "displayName": "Windows Debug x64"
+    },
+    {
+      "name": "windows-debug-x64-asan",
+      "configurePreset": "config-windows-debug-x64-asan",
+      "displayName": "Windows Debug x64 (with AddressSanitizer)"
+    },
+    {
+      "name": "windows-release-x64",
+      "configurePreset": "config-windows-release-x64",
+      "displayName": "Windows Release x64"
+    },
+    {
+      "name": "windows-relwithdebinfo-x64",
+      "configurePreset": "config-windows-relwithdebinfo-x64",
+      "displayName": "Windows RelWithDebInfo x64"
+    }
+  ]
+}
