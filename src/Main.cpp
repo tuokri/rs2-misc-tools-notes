@@ -1,7 +1,7 @@
 #include <array>
+#include <cassert>
 #include <cstdint>
 #include <exception>
-#include <ios>
 #include <iostream>
 #include <print>
 #include <string>
@@ -43,6 +43,12 @@ if (DebuggerPresent())         \
     throw;                      \
 }
 
+// ReSharper disable once CppConstValueFunctionReturnType
+constexpr std::size_t StupidSize(std::string_view str)
+{
+    return (str.size() + sizeof(uint32_t) - 1) / sizeof(uint32_t);
+}
+
 void PrintBuffer(const std::vector<std::uint32_t>& buffer)
 {
     std::print("{{");
@@ -57,46 +63,60 @@ void PrintBuffer(const std::vector<std::uint32_t>& buffer)
     std::println("}}");
 }
 
-template<std::size_t T>
-void PrintBuffer(const std::array<std::uint32_t, T>& buffer)
-{
-    std::print("{{");
-    for (auto i = 0; i < T; ++i)
-    {
-        std::print("{}", buffer[i]);
-        if (i < T - 1)
-        {
-            std::print(", ");
-        }
-    }
-    std::println("}}");
-}
+// template<std::size_t T>
+// void PrintBuffer(const std::array<std::uint32_t, T>& buffer)
+// {
+//     std::print("{{");
+//     for (auto i = 0; i < T; ++i)
+//     {
+//         std::print("{}", buffer[i]);
+//         if (i < T - 1)
+//         {
+//             std::print(", ");
+//         }
+//     }
+//     std::println("}}");
+// }
+
+// TODO: maybe strip trailing NULs in DecryptString funcs?
 
 template<std::size_t T>
-void DecryptData(
+std::string DecryptData(
     std::string_view name,
     const std::array<std::uint32_t, T>& data)
 {
-    std::string decrypted((T + 1) * sizeof(std::uint32_t), '\0');
+    std::string decrypted(T * sizeof(std::uint32_t), '\0');
     std::println("{}:", name);
     RS2::Crypto::DecryptString(data.data(), data.size(), decrypted.data());
     std::println("decrypted: {}\n", decrypted);
+    return decrypted;
 }
 
-void DecryptData(
+std::string DecryptData(
     std::string_view name,
     const std::vector<std::uint32_t>& data)
 {
-    std::string decrypted((data.size() + 1) * sizeof(std::uint32_t), '\0');
+    std::string decrypted(data.size() * sizeof(std::uint32_t), '\0');
     std::println("{}:", name);
     RS2::Crypto::DecryptString(data.data(), data.size(), decrypted.data());
     std::println("decrypted: {}\n", decrypted);
+    return decrypted;
 }
 
-// ReSharper disable once CppConstValueFunctionReturnType
-WIN_MAYBE_CONSTEXPR std::size_t StupidSize(std::string_view str)
+void CheckString(std::string_view str)
 {
-    return std::floor((str.size() + 1) / sizeof(std::uint32_t));
+    std::println("CheckString: '{}'", str);
+    std::vector<std::uint32_t> encrypted;
+    WIN_MAYBE_CONSTEXPR std::size_t strSize = StupidSize(str);
+    std::println("str.size()           : {}", str.size());
+    std::println("strSize (StupidSize) : {}", strSize);
+    encrypted.resize(strSize);
+    RS2::Crypto::EncryptString(str.data(), encrypted.data());
+    std::println("encrypted buffer:");
+    PrintBuffer(encrypted);
+    const auto decrypted = DecryptData(str, encrypted);
+    std::cout << std::flush;
+    assert(std::strcmp(str.data(), decrypted.data()) == 0);
 }
 
 void RunRS2Checks()
@@ -118,7 +138,7 @@ void RunRS2Checks()
     };
 
     constexpr std::string_view s1 = "TKLMutator.u";
-    WIN_MAYBE_CONSTEXPR std::size_t s1Size = StupidSize(s1);
+    constexpr std::size_t s1Size = StupidSize(s1);
     encrypted.resize(s1Size);
     std::println("s1Size: {}", s1Size);
     RS2::Crypto::EncryptString(s1.data(), encrypted.data());
@@ -126,14 +146,19 @@ void RunRS2Checks()
     PrintBuffer(encrypted);
     DecryptData(s1, encrypted);
 
+    constexpr std::size_t tklMutatorMd5Size = StupidSize(tklMutatorMd5);
+    encrypted.resize(tklMutatorMd5Size);
+    RS2::Crypto::EncryptString(tklMutatorMd5, encrypted.data());
+    DecryptData("tklMutatorMd5", encrypted);
+
     constexpr std::string_view twi = "www.tripwireinteractive.com";
-    WIN_MAYBE_CONSTEXPR std::size_t twiSize = StupidSize(twi);
-    std::println("twiSize: {}", s1Size);
+    constexpr std::size_t twiSize = StupidSize(twi);
+    std::println("twiSize: {}", twiSize);
     encrypted.resize(twiSize);
     RS2::Crypto::EncryptString(twi.data(), encrypted.data());
     std::println("encrypted buffer:");
     PrintBuffer(encrypted);
-    DecryptData("www.tripwireinteractive.com", encrypted);
+    DecryptData(twi, encrypted);
 
     constexpr std::array addr0 = {
         667268793U, 572063549U, 2821723169U, 1079833058U,
@@ -159,6 +184,30 @@ void RunRS2Checks()
     };
     DecryptData("gom3name", gom3name);
     DecryptData("gom3md5", gom3md5);
+
+    constexpr auto strings = std::to_array<std::string_view>({
+        "GOM3.U",
+        "     x",
+        "      5",
+        "      55",
+        "     ####",
+        "      6asd",
+        "TKLMutator.U",
+        "AAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBCCCCCCCCCCCCDDDDDDDDDDXXXX",
+        "AAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBCCCCCCCCCCCXDDDDDDDDDDDXXXX",
+        "AAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBCCCCCCCCCCCCDDDDDDDDDDDDXXXX",
+        "AAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBCCCCCCCCCCCCDDDDDDDDDDDDDXXXX",
+        "AAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBCCCCCCCCCCCCDDDDDDDDDDDDDDDXXX",
+        "AAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBCCCCCCCCCCCCDDDDDDDDDDDDDDDDDXX",
+        "AAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBCCCCCCCCCCCCDDDDDDDDDDDDDDDDDXXX",
+        "AAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBCCCCCCCCCCCCDDDDDDDDDDDDDDDDDXXXX1",
+        "AAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBCCCCCCCCCCCCDDDDDDDDDDDDDDDDDXXXX23",
+        "AAAAAAAAAAAAAAAAAABBBBBBBBBBBBBBBCCCCCCCCCCCCDDDDDDDDDDDDDDDDDXXXX444",
+    });
+    for (const auto& s: strings)
+    {
+        CheckString(s);
+    }
 }
 
 } // namespace
