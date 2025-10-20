@@ -43,10 +43,9 @@ if (DebuggerPresent())         \
     throw;                      \
 }
 
-// ReSharper disable once CppConstValueFunctionReturnType
-constexpr std::size_t StupidSize(std::string_view str)
+constexpr std::size_t BufferSizeU32(std::string_view str)
 {
-    return (str.size() + sizeof(uint32_t) - 1) / sizeof(uint32_t);
+    return (str.size() + sizeof(std::uint32_t) - 1) / sizeof(std::uint32_t);
 }
 
 void PrintBuffer(const std::vector<std::uint32_t>& buffer)
@@ -107,9 +106,9 @@ void CheckString(std::string_view str)
 {
     std::println("CheckString: '{}'", str);
     std::vector<std::uint32_t> encrypted;
-    WIN_MAYBE_CONSTEXPR std::size_t strSize = StupidSize(str);
+    const std::size_t strSize = BufferSizeU32(str);
     std::println("str.size()           : {}", str.size());
-    std::println("strSize (StupidSize) : {}", strSize);
+    std::println("strSize (U32s)       : {}", strSize);
     encrypted.resize(strSize);
     RS2::Crypto::EncryptString(str.data(), encrypted.data());
     std::println("encrypted buffer:");
@@ -138,7 +137,7 @@ void RunRS2Checks()
     };
 
     constexpr std::string_view s1 = "TKLMutator.u";
-    constexpr std::size_t s1Size = StupidSize(s1);
+    constexpr std::size_t s1Size = BufferSizeU32(s1);
     encrypted.resize(s1Size);
     std::println("s1Size: {}", s1Size);
     RS2::Crypto::EncryptString(s1.data(), encrypted.data());
@@ -146,13 +145,13 @@ void RunRS2Checks()
     PrintBuffer(encrypted);
     DecryptData(s1, encrypted);
 
-    constexpr std::size_t tklMutatorMd5Size = StupidSize(tklMutatorMd5);
+    constexpr std::size_t tklMutatorMd5Size = BufferSizeU32(tklMutatorMd5);
     encrypted.resize(tklMutatorMd5Size);
     RS2::Crypto::EncryptString(tklMutatorMd5, encrypted.data());
     DecryptData("tklMutatorMd5", encrypted);
 
     constexpr std::string_view twi = "www.tripwireinteractive.com";
-    constexpr std::size_t twiSize = StupidSize(twi);
+    constexpr std::size_t twiSize = BufferSizeU32(twi);
     std::println("twiSize: {}", twiSize);
     encrypted.resize(twiSize);
     RS2::Crypto::EncryptString(twi.data(), encrypted.data());
