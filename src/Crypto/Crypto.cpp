@@ -15,19 +15,20 @@ constexpr auto INVERSE_DELTA = -0x61c88647;
 namespace RS2::Crypto
 {
 // NOTE: Len should be at least 2? XXTEA.
-void Decrypt(std::uint32_t* value, std::uint32_t length, std::uint32_t* key)
+void Decrypt(std::uint32_t* value, std::uint32_t length, const std::uint32_t* key)
 {
-    std::uint32_t delta = INVERSE_DELTA, y, z, sum;
-    std::uint32_t p, rounds, e, i;
+    std::uint32_t delta = INVERSE_DELTA;
+    std::uint32_t z;
+    std::uint32_t p;
 
     delta = std::numeric_limits<std::uint32_t>::max() - delta;
-    rounds = 6 + 52 / length;
-    sum = rounds * delta;
-    y = value[0];
+    const std::uint32_t rounds = 6 + 52 / length;
+    std::uint32_t sum = rounds * delta;
+    std::uint32_t y = value[0];
 
-    for (i = 0; i < rounds; i++)
+    for (std::uint32_t i = 0; i < rounds; i++)
     {
-        e = (sum >> 2) & 3;
+        const std::uint32_t e = sum >> 2 & 3;
 
         for (p = length - 1; p > 0; p--)
         {
@@ -42,56 +43,57 @@ void Decrypt(std::uint32_t* value, std::uint32_t length, std::uint32_t* key)
     }
 }
 
-char* DecryptString(std::uint32_t* encrypted, std::uint32_t length, char* string)
+char* DecryptString(const std::uint32_t* encrypted, std::uint32_t length, char* string)
 {
-    int stringlength;
-    std::uint32_t key[4], tempvalues[128], i;
+    int stringLen;
+    std::uint32_t key[4];
+    std::uint32_t buffer[128];
+    std::uint32_t i;
 
     key[0] = PRIVATE_KEY_KEY0;
     key[1] = PRIVATE_KEY_KEY1;
     key[2] = PRIVATE_KEY_KEY2;
     key[3] = PRIVATE_KEY_KEY3;
 
-    memcpy(tempvalues, encrypted, length * sizeof(std::uint32_t));
+    memcpy(buffer, encrypted, length * sizeof(std::uint32_t));
+    Decrypt(buffer, length, key);
 
-    Decrypt(tempvalues, length, key);
-
-    for (i = 0, stringlength = 0; i < length; i++)
+    for (i = 0, stringLen = 0; i < length; i++)
     {
-        string[stringlength++] = tempvalues[i] & 255;
-        string[stringlength++] = (tempvalues[i] & 65280) >> 8;
+        string[stringLen++] = buffer[i] & 255;
+        string[stringLen++] = (buffer[i] & 65280) >> 8;
 
-        if (string[stringlength - 1] == 0)
+        if (string[stringLen - 1] == 0)
             break;
 
-        string[stringlength++] = (tempvalues[i] & 16711680) >> 16;
+        string[stringLen++] = (buffer[i] & 16711680) >> 16;
 
-        if (string[stringlength - 1] == 0)
+        if (string[stringLen - 1] == 0)
             break;
 
-        string[stringlength++] = (tempvalues[i] & 4278190080) >> 24;
+        string[stringLen++] = (buffer[i] & 4278190080) >> 24;
     }
 
-    if (string[stringlength - 1] != 0)
-        string[stringlength] = 0;
+    if (string[stringLen - 1] != 0)
+        string[stringLen] = 0;
 
     return string;
 }
 
-void Encrypt(std::uint32_t* value, std::uint32_t length, std::uint32_t* key)
+void Encrypt(std::uint32_t* value, std::uint32_t length, const std::uint32_t* key)
 {
-    std::uint32_t delta = INVERSE_DELTA, y, z, sum;
-    std::uint32_t p, rounds, e;
+    std::uint32_t delta = INVERSE_DELTA, y;
+    std::uint32_t p;
 
-    rounds = 6 + 52 / length;
-    sum = 0;
-    z = value[length - 1];
+    std::uint32_t rounds = 6 + 52 / length;
+    std::uint32_t sum = 0;
+    std::uint32_t z = value[length - 1];
     delta = std::numeric_limits<std::uint32_t>::max() - delta;
 
     do
     {
         sum += delta;
-        e = (sum >> 2) & 3;
+        const std::uint32_t e = sum >> 2 & 3;
 
         for (p = 0; p < length - 1; p++)
         {
@@ -107,24 +109,25 @@ void Encrypt(std::uint32_t* value, std::uint32_t length, std::uint32_t* key)
 // NOTE: length must be at least 5? XXXTEA.
 void EncryptString(const char* string, std::uint32_t* encrypted)
 {
-    int stringlength, i;
-    std::uint32_t length, key[4];
+    int i;
+    std::uint32_t length;
+    std::uint32_t key[4];
 
-    stringlength = strlen(string);
+    const std::size_t stringLen = strlen(string);
 
-    for (i = 0, length = 0; i < stringlength; i += 4, length++)
+    for (i = 0, length = 0; i < stringLen; i += 4, length++)
     {
-        encrypted[length] = string[i];
+        encrypted[length] = static_cast<unsigned char>(string[i]);
 
-        if (i + 1 < stringlength)
+        if (i + 1 < stringLen)
         {
             encrypted[length] += string[i + 1] << 8;
 
-            if (i + 2 < stringlength)
+            if (i + 2 < stringLen)
             {
                 encrypted[length] += string[i + 2] << 16;
 
-                if (i + 3 < stringlength)
+                if (i + 3 < stringLen)
                 {
                     encrypted[length] += string[i + 3] << 24;
                 }
