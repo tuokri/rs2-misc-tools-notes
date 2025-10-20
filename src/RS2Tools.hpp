@@ -10,4 +10,10 @@
 #  define WINDOWS 0
 #endif
 
+#if WINDOWS
+#define WIN_MAYBE_CONSTEXPR const
+#else
+#define WIN_MAYBE_CONSTEXPR constexpr
+#endif
+
 #include "Crypto/Crypto.hpp"

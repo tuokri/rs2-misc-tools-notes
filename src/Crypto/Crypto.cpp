@@ -1,27 +1,30 @@
 #include <cstdint>
+#include <cstring>
 #include <limits>
-#include <memory>
 
 #include "Crypto/Crypto.hpp"
 
-constexpr std::uint32_t PRIVATE_KEY_KEY0 = 0xea2e0f;
-constexpr std::uint32_t PRIVATE_KEY_KEY1 = 0x953;
-constexpr std::uint32_t PRIVATE_KEY_KEY2 = 0xde19d3a7;
-constexpr std::uint32_t PRIVATE_KEY_KEY3 = 0x8281d;
-constexpr auto INVERSE_DELTA = -0x61c88647;
+constexpr std::uint32_t GPrivateKey0 = 0xea2e0f;
+constexpr std::uint32_t GPrivateKey1 = 0x953;
+constexpr std::uint32_t GPrivateKey2 = 0xde19d3a7;
+constexpr std::uint32_t GPrivateKey3 = 0x8281d;
+// constexpr auto GInverseDelta = -0x61c88647;
+constexpr auto GDelta = 0x9e3779b9;
 
 #define MX (((z>>5^y<<2) + (y>>3^z<<4)) ^ ((sum^y) + (key[(p&3)^e] ^ z)))
 
 namespace RS2::Crypto
 {
+
 // NOTE: Len should be at least 2? XXTEA.
 void Decrypt(std::uint32_t* value, std::uint32_t length, const std::uint32_t* key)
 {
-    std::uint32_t delta = INVERSE_DELTA;
+    // std::uint32_t delta = GInverseDelta;
     std::uint32_t z;
     std::uint32_t p;
 
-    delta = std::numeric_limits<std::uint32_t>::max() - delta;
+    // delta = std::numeric_limits<std::uint32_t>::max() - delta;
+    constexpr auto delta = GDelta;
     const std::uint32_t rounds = 6 + 52 / length;
     std::uint32_t sum = rounds * delta;
     std::uint32_t y = value[0];
@@ -47,15 +50,15 @@ char* DecryptString(const std::uint32_t* encrypted, std::uint32_t length, char* 
 {
     int stringLen;
     std::uint32_t key[4];
-    std::uint32_t buffer[128];
+    std::uint32_t buffer[GXXTEABufferSize * 4];
     std::uint32_t i;
 
-    key[0] = PRIVATE_KEY_KEY0;
-    key[1] = PRIVATE_KEY_KEY1;
-    key[2] = PRIVATE_KEY_KEY2;
-    key[3] = PRIVATE_KEY_KEY3;
+    key[0] = GPrivateKey0;
+    key[1] = GPrivateKey1;
+    key[2] = GPrivateKey2;
+    key[3] = GPrivateKey3;
 
-    memcpy(buffer, encrypted, length * sizeof(std::uint32_t));
+    std::memcpy(buffer, encrypted, length * sizeof(std::uint32_t));
     Decrypt(buffer, length, key);
 
     for (i = 0, stringLen = 0; i < length; i++)
@@ -82,13 +85,15 @@ char* DecryptString(const std::uint32_t* encrypted, std::uint32_t length, char* 
 
 void Encrypt(std::uint32_t* value, std::uint32_t length, const std::uint32_t* key)
 {
-    std::uint32_t delta = INVERSE_DELTA, y;
+    // std::uint32_t delta = GInverseDelta;
+    std::uint32_t y;
     std::uint32_t p;
 
     std::uint32_t rounds = 6 + 52 / length;
     std::uint32_t sum = 0;
     std::uint32_t z = value[length - 1];
-    delta = std::numeric_limits<std::uint32_t>::max() - delta;
+    // delta = std::numeric_limits<std::uint32_t>::max() - delta;
+    constexpr auto delta = GDelta;
 
     do
     {
@@ -113,7 +118,7 @@ void EncryptString(const char* string, std::uint32_t* encrypted)
     std::uint32_t length;
     std::uint32_t key[4];
 
-    const std::size_t stringLen = strlen(string);
+    const std::size_t stringLen = std::strlen(string);
 
     for (i = 0, length = 0; i < stringLen; i += 4, length++)
     {
@@ -135,10 +140,10 @@ void EncryptString(const char* string, std::uint32_t* encrypted)
         }
     }
 
-    key[0] = PRIVATE_KEY_KEY0;
-    key[1] = PRIVATE_KEY_KEY1;
-    key[2] = PRIVATE_KEY_KEY2;
-    key[3] = PRIVATE_KEY_KEY3;
+    key[0] = GPrivateKey0;
+    key[1] = GPrivateKey1;
+    key[2] = GPrivateKey2;
+    key[3] = GPrivateKey3;
 
     Encrypt(encrypted, length, key);
 }
