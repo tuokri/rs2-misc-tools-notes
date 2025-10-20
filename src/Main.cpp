@@ -113,7 +113,8 @@ void RunRS2Checks()
         2000924894U, 277274360U, 4140362311U,
     };
     constexpr std::array tklMutatorData1 = {
-        2504114439U, 3344273490U, 953332573U, 3691125115U, 1687282814U, 1065781761U, 902691679U, 934229910U,
+        2504114439U, 3344273490U, 953332573U, 3691125115U,
+        1687282814U, 1065781761U, 902691679U, 934229910U,
     };
 
     constexpr std::string_view s1 = "TKLMutator.u";
@@ -134,7 +135,10 @@ void RunRS2Checks()
     PrintBuffer(encrypted);
     DecryptData("www.tripwireinteractive.com", encrypted);
 
-    constexpr std::array addr0 = {667268793U, 572063549U, 2821723169U, 1079833058U, 57665466U, 315357024U, 3557871184U};
+    constexpr std::array addr0 = {
+        667268793U, 572063549U, 2821723169U, 1079833058U,
+        57665466U, 315357024U, 3557871184U,
+    };
     DecryptData("addr0", addr0);
 
     constexpr std::array addr1 = {
@@ -146,6 +150,15 @@ void RunRS2Checks()
     DecryptData("tklMutatorData0", tklMutatorData0);
     DecryptData("tklMutatorData0Alt", tklMutatorData0Alt);
     DecryptData("tklMutatorData1", tklMutatorData1);
+
+    // GOM3.u / ced0ebe54a5f0771059251601fc92069
+    constexpr std::array gom3name = {1040990352U, 2495382815U};
+    constexpr std::array gom3md5 = {
+        3029409044U, 1812751812U, 2284506666U, 3317781048U,
+        309846119U, 4155870121U, 239163896U, 3563961329U,
+    };
+    DecryptData("gom3name", gom3name);
+    DecryptData("gom3md5", gom3md5);
 }
 
 } // namespace
