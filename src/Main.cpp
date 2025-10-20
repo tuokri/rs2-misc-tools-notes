@@ -163,6 +163,8 @@ void RunRS2Checks()
 
 } // namespace
 
+// TODO: argument parsing.
+//      1. take in file, spit out Safelist.mut formatted data!
 int main()
 {
     try
