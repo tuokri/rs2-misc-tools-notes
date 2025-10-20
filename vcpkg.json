@@ -1,0 +1,7 @@
+{
+  "dependencies": [
+    "boost-program-options"
+  ],
+  "name": "rs2-misc-tools-notes",
+  "version": "0.1.0"
+}

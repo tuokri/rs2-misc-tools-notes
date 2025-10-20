@@ -7,10 +7,14 @@
 #include <string>
 #include <vector>
 
+#include <boost/program_options.hpp>
+
 #include "RS2Tools.hpp"
 
 namespace
 {
+
+namespace po = boost::program_options;
 
 #ifndef NDEBUG
 
@@ -38,7 +42,7 @@ constexpr bool DebuggerPresent()
 
 // Helper macro to make debugging easier when a debugger is attached.
 #define THROW_IF_DEBUGGING()    \
-if (DebuggerPresent())         \
+if (DebuggerPresent())          \
 {                               \
     throw;                      \
 }

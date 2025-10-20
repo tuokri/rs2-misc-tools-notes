@@ -9,6 +9,7 @@ target_link_libraries(
     RS2Tools
     PRIVATE
     RS2Crypto
+    Boost::program_options
 )
 
 target_include_directories(

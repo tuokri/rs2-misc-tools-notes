@@ -55,6 +55,13 @@ endif ()
 
 set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_COMMAND} -E time")
 
+find_package(
+    Boost
+    COMPONENTS
+    program_options
+    REQUIRED
+)
+
 add_subdirectory(src)
 
 add_compile_options(${RS2_COMPILE_OPTIONS})

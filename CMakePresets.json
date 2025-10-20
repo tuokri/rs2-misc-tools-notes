@@ -6,8 +6,7 @@
     "patch": 0
   },
   "$comment": [
-    "TODO: Remember to add Linux support!",
-    "TODO: Add vcpkg later if needed!"
+    "TODO: Remember to add Linux support!"
   ],
   "configurePresets": [
     {
@@ -15,7 +14,8 @@
       "hidden": true,
       "displayName": "Base Config",
       "description": "Common base configuration",
-      "binaryDir": "${sourceDir}/cmake-build-${presetName}"
+      "binaryDir": "${sourceDir}/cmake-build-${presetName}",
+      "toolchainFile": "submodules/vcpkg/scripts/buildsystems/vcpkg.cmake"
     },
     {
       "name": "config-base-windows",
