@@ -57,4 +57,4 @@ jobs:
         if: always()
         with:
           name: RS2Tools-cmake-build-${{ matrix.preset.os }}-${{ matrix.preset.build }}
-          path: ${{github.workspace}}/cmake-build-${{ matrix.preset.build }}
+          path: ${{github.workspace}}/cmake-build-${{ matrix.preset.config }}
