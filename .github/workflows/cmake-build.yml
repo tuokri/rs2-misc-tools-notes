@@ -37,11 +37,6 @@ jobs:
         run: cl.exe
         if: matrix.preset.os == 'windows-latest'
 
-      - uses: actions/setup-python@v6
-        with:
-          python-version: '3.13'
-          cache: 'pip'
-
       - name: Install latest CMake
         run: pip install --upgrade cmake
 
