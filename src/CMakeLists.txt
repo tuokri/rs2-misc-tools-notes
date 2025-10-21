@@ -1,4 +1,5 @@
 add_subdirectory(Crypto)
+add_subdirectory(Safelist)
 
 add_executable(
     RS2Tools
@@ -9,7 +10,9 @@ target_link_libraries(
     RS2Tools
     PRIVATE
     RS2Crypto
+    Boost::filesystem
     Boost::program_options
+    Boost::system
 )
 
 target_include_directories(

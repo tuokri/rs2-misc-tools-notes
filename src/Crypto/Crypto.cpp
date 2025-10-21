@@ -1,14 +1,11 @@
 #include <cstdint>
 #include <cstring>
-#include <limits>
-
 #include "Crypto/Crypto.hpp"
 
 constexpr std::uint32_t GPrivateKey0 = 0xea2e0f;
 constexpr std::uint32_t GPrivateKey1 = 0x953;
 constexpr std::uint32_t GPrivateKey2 = 0xde19d3a7;
 constexpr std::uint32_t GPrivateKey3 = 0x8281d;
-// constexpr auto GInverseDelta = -0x61c88647;
 constexpr auto GDelta = 0x9e3779b9;
 
 #define MX (((z>>5^y<<2) + (y>>3^z<<4)) ^ ((sum^y) + (key[(p&3)^e] ^ z)))
@@ -19,11 +16,9 @@ namespace RS2::Crypto
 // NOTE: Len should be at least 2? XXTEA.
 void Decrypt(std::uint32_t* value, std::uint32_t length, const std::uint32_t* key)
 {
-    // std::uint32_t delta = GInverseDelta;
     std::uint32_t z;
     std::uint32_t p;
 
-    // delta = std::numeric_limits<std::uint32_t>::max() - delta;
     constexpr auto delta = GDelta;
     const std::uint32_t rounds = 6 + 52 / length;
     std::uint32_t sum = rounds * delta;
@@ -85,14 +80,12 @@ char* DecryptString(const std::uint32_t* encrypted, std::uint32_t length, char* 
 
 void Encrypt(std::uint32_t* value, std::uint32_t length, const std::uint32_t* key)
 {
-    // std::uint32_t delta = GInverseDelta;
     std::uint32_t y;
     std::uint32_t p;
 
     std::uint32_t rounds = 6 + 52 / length;
     std::uint32_t sum = 0;
     std::uint32_t z = value[length - 1];
-    // delta = std::numeric_limits<std::uint32_t>::max() - delta;
     constexpr auto delta = GDelta;
 
     do

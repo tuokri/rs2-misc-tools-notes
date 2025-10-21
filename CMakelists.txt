@@ -55,10 +55,17 @@ endif ()
 
 set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_COMMAND} -E time")
 
+# if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+#     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE INTERNAL "")
+# endif ()
+
 find_package(
     Boost
     COMPONENTS
+    filesystem
+    hash2
     program_options
+    system
     REQUIRED
 )
 

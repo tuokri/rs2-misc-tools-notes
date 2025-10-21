@@ -1,7 +1,7 @@
 #include <array>
 #include <cassert>
-#include <cstdint>
 #include <exception>
+#include <filesystem>
 #include <iostream>
 #include <print>
 #include <string>
@@ -15,6 +15,7 @@ namespace
 {
 
 namespace po = boost::program_options;
+namespace fs = std::filesystem;
 
 #ifndef NDEBUG
 
@@ -66,21 +67,6 @@ void PrintBuffer(const std::vector<std::uint32_t>& buffer)
     std::println("}}");
 }
 
-// template<std::size_t T>
-// void PrintBuffer(const std::array<std::uint32_t, T>& buffer)
-// {
-//     std::print("{{");
-//     for (auto i = 0; i < T; ++i)
-//     {
-//         std::print("{}", buffer[i]);
-//         if (i < T - 1)
-//         {
-//             std::print(", ");
-//         }
-//     }
-//     std::println("}}");
-// }
-
 // TODO: maybe strip trailing NULs in DecryptString funcs?
 
 template<std::size_t T>
@@ -118,7 +104,7 @@ void CheckString(std::string_view str)
     std::println("encrypted buffer:");
     PrintBuffer(encrypted);
     const auto decrypted = DecryptData(str, encrypted);
-    std::cout << std::flush;
+    std::fflush(stdout);
     assert(std::strcmp(str.data(), decrypted.data()) == 0);
 }
 
@@ -215,25 +201,53 @@ void RunRS2Checks()
 
 } // namespace
 
-// TODO: argument parsing.
-//      1. take in file, spit out Safelist.mut formatted data!
-int main()
+int main(int argc, char** argv)
 {
     try
     {
+        po::options_description desc("Options");
+        const auto defaultOutDir = fs::current_path().parent_path();
+        desc.add_options()("help,h", "print the help message");
+
+        po::positional_options_description p;
+        p.add("input-file", -1);
+
+        po::variables_map vm;
+        po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
+
+        const auto& prog = fs::path(argv[0]).filename().string();
+
+        if (vm.contains("help"))
+        {
+            std::println("Usage: {} [input-file ...]\n", prog);
+            desc.print(std::cout);
+            std::fflush(stdout);
+            return EXIT_FAILURE;
+        }
+
+        po::notify(vm);
+
+        if (!vm.contains("input-file"))
+        {
+            std::println("no input file(s)");
+            std::fflush(stdout);
+            return EXIT_FAILURE;
+        }
+
         RunRS2Checks();
-        std::cout << std::flush;
+        std::fflush(stdout);
         return EXIT_SUCCESS;
     }
     catch (const std::exception& ex)
     {
-        std::println("main error: {}", ex.what());
+        std::println("main: error: {}", ex.what());
         THROW_IF_DEBUGGING();
         return EXIT_FAILURE;
     }
     // Catch anything else that was unhandled.
     catch (...)
     {
+        std::println("main: unhandled error");
         THROW_IF_DEBUGGING();
         return EXIT_FAILURE;
     }

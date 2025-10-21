@@ -1,6 +1,9 @@
 {
   "dependencies": [
-    "boost-program-options"
+    "boost-filesystem",
+    "boost-hash2",
+    "boost-program-options",
+    "doctest"
   ],
   "name": "rs2-misc-tools-notes",
   "version": "0.1.0"
