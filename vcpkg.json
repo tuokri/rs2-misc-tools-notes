@@ -1,5 +1,6 @@
 {
   "dependencies": [
+    "boost-asio",
     "boost-filesystem",
     "boost-hash2",
     "boost-program-options",

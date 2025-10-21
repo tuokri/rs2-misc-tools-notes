@@ -11,13 +11,15 @@ if (MSVC)
 endif ()
 
 include(CheckIPOSupported)
-check_ipo_supported(RESULT RS2_FASTPACK_IPO_SUPPORTED OUTPUT RS2_FASTPACK_IPO_ERROR)
+check_ipo_supported(RESULT RS2_IPO_SUPPORTED OUTPUT RS2_IPO_ERROR)
 
-if (RS2_FASTPACK_IPO_SUPPORTED)
-    message(STATUS "IPO / LTO enabled: ${RS2_FASTPACK_IPO_SUPPORTED}")
+if (RS2_IPO_SUPPORTED)
+    message(STATUS "IPO / LTO enabled: ${RS2_IPO_SUPPORTED}")
 else ()
-    message(STATUS "IPO / LTO not supported: ${RS2_FASTPACK_IPO_ERROR}")
+    message(STATUS "IPO / LTO not supported: ${RS2_IPO_ERROR}")
 endif ()
+
+option(RS2_BUILD_TESTS "Build unit tests." ON)
 
 # To make things simpler, instruct .exe, .dll, and .pdb files to be placed
 # in the same directory. Also get rid of Visual Studio generator's default
@@ -62,14 +64,22 @@ set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_COMMAND} -E time")
 find_package(
     Boost
     COMPONENTS
+    asio
     filesystem
     hash2
     program_options
     system
+    CONFIG
     REQUIRED
 )
 
 add_subdirectory(src)
+
+if (RS2_BUILD_TESTS)
+    include(CTest)
+    enable_testing()
+    add_subdirectory(tests)
+endif ()
 
 add_compile_options(${RS2_COMPILE_OPTIONS})
 

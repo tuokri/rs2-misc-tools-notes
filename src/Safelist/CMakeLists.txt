@@ -15,3 +15,8 @@ target_link_libraries(
     PRIVATE
     Boost::hash2
 )
+
+set_property(
+    TARGET RS2Safelist
+    PROPERTY INTERPROCEDURAL_OPTIMIZATION ${RS2_IPO_SUPPORTED}
+)

@@ -9,3 +9,8 @@ target_include_directories(
     PUBLIC
     ${CMAKE_SOURCE_DIR}/src
 )
+
+set_property(
+    TARGET RS2Crypto
+    PROPERTY INTERPROCEDURAL_OPTIMIZATION ${RS2_IPO_SUPPORTED}
+)

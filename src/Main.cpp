@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include <boost/asio.hpp>
 #include <boost/program_options.hpp>
 
 #include "RS2Tools.hpp"
@@ -16,6 +17,7 @@ namespace
 
 namespace po = boost::program_options;
 namespace fs = std::filesystem;
+namespace asio = boost::asio;
 
 #ifndef NDEBUG
 
@@ -46,11 +48,6 @@ constexpr bool DebuggerPresent()
 if (DebuggerPresent())          \
 {                               \
     throw;                      \
-}
-
-constexpr std::size_t BufferSizeU32(std::string_view str)
-{
-    return (str.size() + sizeof(std::uint32_t) - 1) / sizeof(std::uint32_t);
 }
 
 void PrintBuffer(const std::vector<std::uint32_t>& buffer)
@@ -96,7 +93,7 @@ void CheckString(std::string_view str)
 {
     std::println("CheckString: '{}'", str);
     std::vector<std::uint32_t> encrypted;
-    const std::size_t strSize = BufferSizeU32(str);
+    const std::size_t strSize = RS2::Crypto::BufferSizeU32(str);
     std::println("str.size()           : {}", str.size());
     std::println("strSize (U32s)       : {}", strSize);
     encrypted.resize(strSize);
@@ -127,7 +124,7 @@ void RunRS2Checks()
     };
 
     constexpr std::string_view s1 = "TKLMutator.u";
-    constexpr std::size_t s1Size = BufferSizeU32(s1);
+    constexpr std::size_t s1Size = RS2::Crypto::BufferSizeU32(s1);
     encrypted.resize(s1Size);
     std::println("s1Size: {}", s1Size);
     RS2::Crypto::EncryptString(s1.data(), encrypted.data());
@@ -135,13 +132,13 @@ void RunRS2Checks()
     PrintBuffer(encrypted);
     DecryptData(s1, encrypted);
 
-    constexpr std::size_t tklMutatorMd5Size = BufferSizeU32(tklMutatorMd5);
+    constexpr std::size_t tklMutatorMd5Size = RS2::Crypto::BufferSizeU32(tklMutatorMd5);
     encrypted.resize(tklMutatorMd5Size);
     RS2::Crypto::EncryptString(tklMutatorMd5, encrypted.data());
     DecryptData("tklMutatorMd5", encrypted);
 
     constexpr std::string_view twi = "www.tripwireinteractive.com";
-    constexpr std::size_t twiSize = BufferSizeU32(twi);
+    constexpr std::size_t twiSize = RS2::Crypto::BufferSizeU32(twi);
     std::println("twiSize: {}", twiSize);
     encrypted.resize(twiSize);
     RS2::Crypto::EncryptString(twi.data(), encrypted.data());
@@ -234,6 +231,10 @@ int main(int argc, char** argv)
             return EXIT_FAILURE;
         }
 
+        asio::io_context ioc;
+        // ioc.run();
+
+        // TODO: move to tests.
         RunRS2Checks();
         std::fflush(stdout);
         return EXIT_SUCCESS;
