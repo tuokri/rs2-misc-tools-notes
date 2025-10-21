@@ -8,6 +8,7 @@ add_executable(
 target_link_libraries(
     TestCrypto
     PRIVATE
+    RS2Crypto
     doctest::doctest
 )
 
