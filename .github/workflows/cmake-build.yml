@@ -15,11 +15,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        preset:
-          - { os: "windows-latest", config: "config-windows-debug-x64", build: "windows-debug-x64" },
-          - { os: "windows-latest", config: "config-windows-debug-x64-asan", build: "windows-debug-x64-asan" },
-          - { os: "windows-latest", config: "config-windows-release-x64", build: "windows-release-x64" },
-          - { os: "windows-latest", config: "config-windows-relwithdebinfo-x64", build: "windows-relwithdebinfo-x64" },
+        preset: [
+          { os: "windows-latest", config: "config-windows-debug-x64", build: "windows-debug-x64" },
+          { os: "windows-latest", config: "config-windows-debug-x64-asan", build: "windows-debug-x64-asan" },
+          { os: "windows-latest", config: "config-windows-release-x64", build: "windows-release-x64" },
+          { os: "windows-latest", config: "config-windows-relwithdebinfo-x64", build: "windows-relwithdebinfo-x64" },
+        ]
 
     runs-on: ${{ matrix.preset.os }}
 
