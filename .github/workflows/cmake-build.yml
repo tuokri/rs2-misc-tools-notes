@@ -1,0 +1,52 @@
+name: Build cmake project
+
+on:
+  push:
+    branches:
+      - "master"
+  pull_request:
+    branches:
+      - "master"
+
+jobs:
+  build:
+    # TODO: CACHE VCPKG!
+
+    strategy:
+      fail-fast: false
+      matrix:
+        preset:
+          - { os: "windows-latest", config: "config-windows-debug-x64", build: "windows-debug-x64" },
+          - { os: "windows-latest", config: "config-windows-debug-x64-asan", build: "windows-debug-x64-asan" },
+          - { os: "windows-latest", config: "config-windows-release-x64", build: "windows-release-x64" },
+          - { os: "windows-latest", config: "config-windows-relwithdebinfo-x64", build: "windows-relwithdebinfo-x64" },
+
+    runs-on: ${{ matrix.preset.os }}
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        if: matrix.preset.os == 'windows-latest'
+
+      - name: Print MSVC version
+        run: cl.exe
+        if: matrix.preset.os == 'windows-latest'
+
+      - name: Configure CMake
+        working-directory: ${{ github.workspace }}
+        run: cmake --preset ${{ matrix.preset.config }}
+
+      - name: Build with CMake
+        working-directory: ${{ github.workspace }}
+        run: cmake --build --preset ${{ matrix.preset.build }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: RS2Tools-cmake-build-${{ matrix.preset.os }}-${{ matrix.preset.build }}
+          path: ${{github.workspace}}/cmake-build-${{ matrix.preset.build }}
