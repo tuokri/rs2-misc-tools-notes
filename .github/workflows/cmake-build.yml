@@ -15,13 +15,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        preset:
+        cmake_preset:
           - { os: "windows-latest", config: "config-windows-debug-x64", build: "windows-debug-x64" },
           - { os: "windows-latest", config: "config-windows-debug-x64-asan", build: "windows-debug-x64-asan" },
           - { os: "windows-latest", config: "config-windows-release-x64", build: "windows-release-x64" },
           - { os: "windows-latest", config: "config-windows-relwithdebinfo-x64", build: "windows-relwithdebinfo-x64" },
 
-    runs-on: ${{ matrix.preset.os }}
+    runs-on: ${{ matrix.cmake_preset.os }}
 
     steps:
       - uses: actions/checkout@v5
@@ -30,23 +30,23 @@ jobs:
 
       - name: Setup MSVC
         uses: ilammy/msvc-dev-cmd@v1
-        if: matrix.preset.os == 'windows-latest'
+        if: matrix.cmake_preset.os == 'windows-latest'
 
       - name: Print MSVC version
         run: cl.exe
-        if: matrix.preset.os == 'windows-latest'
+        if: matrix.cmake_preset.os == 'windows-latest'
 
       - name: Configure CMake
         working-directory: ${{ github.workspace }}
-        run: cmake --preset ${{ matrix.preset.config }}
+        run: cmake --preset ${{ matrix.cmake_preset.config }}
 
       - name: Build with CMake
         working-directory: ${{ github.workspace }}
-        run: cmake --build --preset ${{ matrix.preset.build }}
+        run: cmake --build --preset ${{ matrix.cmake_preset.build }}
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: RS2Tools-cmake-build-${{ matrix.preset.os }}-${{ matrix.preset.build }}
-          path: ${{github.workspace}}/cmake-build-${{ matrix.preset.build }}
+          name: RS2Tools-cmake-build-${{ matrix.cmake_preset.os }}-${{ matrix.cmake_preset.build }}
+          path: ${{github.workspace}}/cmake-build-${{ matrix.cmake_preset.build }}
