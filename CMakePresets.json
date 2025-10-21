@@ -128,5 +128,51 @@
       "configurePreset": "config-windows-relwithdebinfo-x64",
       "displayName": "Windows RelWithDebInfo x64"
     }
+  ],
+  "testPresets": [
+    {
+      "name": "windows-debug-x64",
+      "configurePreset": "config-windows-debug-x64",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
+    },
+    {
+      "name": "windows-debug-x64-asan",
+      "configurePreset": "config-windows-debug-x64-asan",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
+    },
+    {
+      "name": "windows-release-x64",
+      "configurePreset": "config-windows-release-x64",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
+    },
+    {
+      "name": "windows-relwithdebinfo-x64",
+      "configurePreset": "config-windows-relwithdebinfo-x64",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      }
+    }
   ]
 }
