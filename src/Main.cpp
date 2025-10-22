@@ -144,4 +144,6 @@ int main(int argc, char** argv)
     {
         std::println("main: unhandled error");
         THROW_IF_DEBUGGING();
-        return EXIT_FAILURE
+        return EXIT_FAILURE;
+    }
+}
