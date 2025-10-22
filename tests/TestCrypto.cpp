@@ -9,6 +9,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
 
+#include "RS2Tools.hpp"
 #include "Crypto/Crypto.hpp"
 
 void PrintBuffer(const std::vector<std::uint32_t>& buffer)

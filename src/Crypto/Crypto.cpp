@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <cstring>
+
 #include "Crypto/Crypto.hpp"
 
 constexpr std::uint32_t GPrivateKey0 = 0xea2e0f;
